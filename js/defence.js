@@ -165,8 +165,8 @@ class DefenceIndicator
                 const minDeptAskPrice = Math.min(...Array.from(this.depthAsks.keys()));
                 const maxDepthBidPrice = Math.max(...Array.from(this.depthBids.keys()));
 
-                this.htmlTableCellSpread.innerHTML = `<small style="color: green;">${maxDepthBidPrice}</small><br>` +
-                    `<small style="color: red;">${minDeptAskPrice}</small>`;
+                this.htmlTableCellSpread.innerHTML = `<small style="color: red;">${minDeptAskPrice}</small><br>` +
+                    `<small style="color: green;">${maxDepthBidPrice}</small>`;
 
                 let depthAsksAmounts = {};
                 let depthBidsAmounts = {};
