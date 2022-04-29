@@ -151,7 +151,8 @@ class DefenceIndicator
             // Symbol cell
             this.htmlTableCellSymbol = this.htmlTableRow.insertCell();
             this.htmlTableCellSymbol.innerHTML =
-                '<a class="btn btn-sm btn-outline-info" href="' + this.getSymbolButtonUri() + '" target="_blank">' + symbol + '</a>';
+                '<a class="btn btn-sm btn-outline-info" href="' + this.getSymbolButtonUri() + '" target="_blank">' +
+                symbol + '</a>';
 
             this.htmlTableCellSpread = this.htmlTableRow.insertCell();
 
@@ -230,10 +231,10 @@ class DefenceIndicator
                     this.depthAsks.clear();
                     this.updateAsks(depth.asks);
 
-                    this.htmlTableCellSymbol.innerHTML =
-                        '<a class="btn btn-sm btn-outline-info" href="' + this.getSymbolButtonUri() + '" target="_blank">' +
-                        symbol + '</a><br>' +
-                        '<small>' + (new Date()).toLocaleTimeString() + '</small>';
+                    // this.htmlTableCellSymbol.innerHTML =
+                    //     '<a class="btn btn-sm btn-outline-info" href="' + this.getSymbolButtonUri() + '" target="_blank">' +
+                    //     symbol + '</a><br>' +
+                    //     '<small>' + (new Date()).toLocaleTimeString() + '</small>';
                 });
             }, 20000);
         }
