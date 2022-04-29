@@ -587,7 +587,7 @@ class Dashboard
         this.depthBids = new Map();
         this.minDepthItemAmountToShow = 1000;
         this.depthItemsMaxShow = 50;
-        this.depthRoundTo = 0.01;
+        this.depthRoundTo = 0.0005;
 
         this.depthUpdateInterval = setInterval(() => {
             this.depthAsks = this.sortDepthItems(this.depthAsks);

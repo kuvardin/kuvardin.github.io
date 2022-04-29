@@ -150,15 +150,22 @@ class DefenceIndicator
 
             // Symbol cell
             this.htmlTableCellSymbol = this.htmlTableRow.insertCell();
+            this.htmlTableCellSymbol.classList.add('text-center');
+            this.htmlTableCellSymbol.classList.add('align-middle');
             this.htmlTableCellSymbol.innerHTML =
                 '<a class="btn btn-sm btn-outline-info" href="' + this.getSymbolButtonUri() + '" target="_blank">' +
                 symbol + '</a>';
 
             this.htmlTableCellSpread = this.htmlTableRow.insertCell();
+            this.htmlTableCellSpread.classList.add('text-center');
+            this.htmlTableCellSpread.classList.add('align-middle');
 
             DefenceIndicator.Market.VALUES_PERCENTS.forEach((percent) => {
                 const cellForPercent = this.htmlTableRow.insertCell();
                 cellForPercent.classList.add('text-center');
+                cellForPercent.classList.add('px-0');
+                cellForPercent.style.width = '7%';
+
                 this.htmlTableCellValues.set(percent, cellForPercent);
             })
 
