@@ -409,7 +409,7 @@ class Dashboard
             this.tradesBuyAverages.push(currentAverageBuy);
 
             const currentAverageSell = this.tradesSellSum * 1000 / this.chartsStepMilliseconds;
-            this.tradesSellAverages.push(this.currentAverageSell);
+            this.tradesSellAverages.push(currentAverageSell);
 
             this.tradesOnlySellAverages.push(
                 currentAverageSell > currentAverageBuy ? currentAverageSell - currentAverageBuy : 0

@@ -70,7 +70,7 @@ class DefenceIndicator
     }
 
     static Market = class {
-        static VALUES_PERCENTS = [5, 10, 20, 30, 50, 100, 200];
+        static VALUES_PERCENTS = [1, 2, 3, 5, 10, 20, 30, 50, 100, 200];
 
         /**
          * Symbol in uppercase
