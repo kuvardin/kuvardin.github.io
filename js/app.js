@@ -5,8 +5,11 @@ const depthAsksTable = $('#depth-asks');
 const depthBidsTable = $('#depth-bids');
 const tradesTable = $('#trades');
 
+
 class Dashboard
 {
+    getParams = new URLSearchParams((new URL(window.location)).search);
+
     /**
      * Binance socket connection
      *
@@ -173,6 +176,11 @@ class Dashboard
     depthItemsMaxShow = 50;
 
     /**
+     * @type {number|null}
+     */
+    lastTradePrice = null;
+
+    /**
      * Depth amounts round precision
      *
      * @type {number}
@@ -299,7 +307,11 @@ class Dashboard
 
         // this.tradesTable.empty();
 
-        this.marketSymbol = document.getElementById('input-symbol').value;
+        let inputSymbol = document.getElementById('input-symbol');
+        this.marketSymbol = this.getParams.has('symbol')
+            ? this.getParams.get('symbol')
+            : inputSymbol.value;
+        inputSymbol.value = this.marketSymbol;
 
         depthAsksTable.empty();
         depthBidsTable.empty();
@@ -313,6 +325,8 @@ class Dashboard
         this.backgroundFullHeightSum = 50000;
         this.backgroundCapacitySum = 100000;
 
+        this.lastTradePrice = null;
+
         this.initTradesBook();
         this.initDepthBook();
 
@@ -323,6 +337,7 @@ class Dashboard
             if (message.trade !== null) {
                 const trade = message.trade;
                 const priceRounded = trade.price.toString();
+                this.lastTradePrice = message.trade.price;
 
                 if (this.priceInTitle !== priceRounded) {
                     top.document.title = `${priceRounded} ${this.marketSymbol.toUpperCase()}`;
@@ -536,6 +551,11 @@ class Dashboard
                     return;
                 }
 
+                const quantityPrice = parseFloat(priceString);
+                let depthPercents = this.lastTradePrice === 0
+                    ? 0
+                    : (quantityPrice / this.lastTradePrice * 100);
+
                 const backgroundHeight = depthSimpleItem.amount < this.backgroundFullHeightSum
                     ? (depthSimpleItem.amount * 100 / this.backgroundFullHeightSum)
                     : 100;
@@ -545,23 +565,26 @@ class Dashboard
                         ? (depthSimpleItem.amount / this.backgroundCapacitySum) : 1) * 0.8;
 
                 const amountString = (depthSimpleItem.amount / 1000).toFixed(1).toLocaleString();
-                const quantityString = parseFloat(depthSimpleItem.quantity.toPrecision(8)).toString();
 
                 if (isBids) {
+                    depthPercents = (100 - depthPercents).toFixed(2);
+
                     bidsAmountSum += depthSimpleItem.amount;
                     const bidsAmountSumString = (bidsAmountSum / 1000).toFixed(1).toLocaleString();
                     resultHtml += `<tr style="background: linear-gradient(to left, rgba(0,255,0,${backgroundOpacity}) ${backgroundHeight}%, transparent 0);">` +
                         `<td class="text-end">${bidsAmountSumString}</td>` +
                         `<td class="text-end">${amountString}</td>` +
-                        `<td class="text-end">${quantityString}</td>` +
+                        `<td class="text-end">${depthPercents}</td>` +
                         `<td class="text-end"><b>${priceString}</b></td>` +
                         '</tr>';
                 } else {
+                    depthPercents = (depthPercents - 100).toFixed(2);
+
                     asksAmountSum += depthSimpleItem.amount;
                     const asksAmountSumString = (asksAmountSum / 1000).toFixed(1).toLocaleString();
                     resultHtml += `<tr style="background: linear-gradient(to right, rgba(255,0,0,${backgroundOpacity}) ${backgroundHeight}%, transparent 0);">` +
                         `<td><b>${priceString}</b></td>` +
-                        `<td class="text-end">${quantityString}</td>` +
+                        `<td class="text-end">${depthPercents}</td>` +
                         `<td class="text-end">${amountString}</td>` +
                         `<td class="text-end">${asksAmountSumString}</td>` +
                         '</tr>';
