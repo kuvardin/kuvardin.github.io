@@ -5,14 +5,14 @@ class DefenceIndicator
      *
      * @type {number}
      */
-    static DEPTH_TABLE_ROWS = 200;
+    static DEPTH_TABLE_ROWS = 100;
 
     /**
      * Depth table step in decipercents
      *
      * @type {number}
      */
-    static DEPTH_TABLE_ROW_STEP = 2;
+    static DEPTH_TABLE_ROW_STEP = 1;
 
     static MarketsCollection = class {
         /**
@@ -66,7 +66,7 @@ class DefenceIndicator
                 console.log('Symbol already added: ' + symbol);
             } else {
                 try {
-                    const depth = await this.binanceApi.getDepth(symbol, 1000);
+                    const depth = await this.binanceApi.getDepth(symbol, 10000);
 
                     this.binanceSocket.subscribe([
                         BinanceStream.Stream.depth(symbol, 100)
@@ -195,16 +195,6 @@ class DefenceIndicator
         htmlDepthAskAmounts = [];
 
         /**
-         * @type {HTMLTableCellElement[]}
-         */
-        htmlDepthBidAmountSums = [];
-
-        /**
-         * @type {HTMLTableCellElement[]}
-         */
-        htmlDepthAskAmountSums = [];
-
-        /**
          * @type {number[]}
          */
         depthBidAmounts = [];
@@ -288,32 +278,41 @@ class DefenceIndicator
 
             const orderBookCardBody = document.createElement('div');
             orderBookCardBody.classList.add('card-body');
+            orderBookCardBody.classList.add('p-0');
 
             const depthTable = document.createElement('table');
             depthTable.classList.add('table');
             depthTable.classList.add('table-hover');
             depthTable.classList.add('table-sm');
+            depthTable.classList.add('table-borderless');
 
-            for (let i = 1; i <= DefenceIndicator.DEPTH_TABLE_ROWS; i++) {
+            for (let i = DefenceIndicator.DEPTH_TABLE_ROWS; i >= 1; i--) {
                 const htmlDepthRow = depthTable.insertRow();
-                const percentsCell = htmlDepthRow.insertCell(0);
-                percentsCell.innerHTML = '<b>' + (i * DefenceIndicator.DEPTH_TABLE_ROW_STEP / 10).toFixed(1) + '%</b>';
+                const percentsCell = htmlDepthRow.insertCell();
+                percentsCell.innerHTML = '<small>' + (i * DefenceIndicator.DEPTH_TABLE_ROW_STEP / 10).toFixed(1) + '</small>';
                 percentsCell.classList.add('text-end');
 
-                this.htmlDepthBidAmountSums[i] = htmlDepthRow.insertCell(1);
-                this.htmlDepthBidAmounts[i] = htmlDepthRow.insertCell(2);
-                this.htmlDepthBidAmounts[i].classList.add('depth-bid-amount')
-                this.htmlDepthBidAmounts[i].classList.add('text-end')
-
-                this.htmlDepthBidPrices[i] = htmlDepthRow.insertCell(3);
-                this.htmlDepthBidPrices[i].classList.add('text-end');
-
-                this.htmlDepthAskPrices[i] = htmlDepthRow.insertCell(4);
-                this.htmlDepthAskAmounts[i] = htmlDepthRow.insertCell(5);
+                this.htmlDepthAskAmounts[i] = htmlDepthRow.insertCell();
                 this.htmlDepthAskAmounts[i].classList.add('depth-ask-amount')
                 this.htmlDepthAskAmounts[i].classList.add('text-end')
 
-                this.htmlDepthAskAmountSums[i] = htmlDepthRow.insertCell(6);
+                this.htmlDepthAskPrices[i] = htmlDepthRow.insertCell();
+                this.htmlDepthAskPrices[i].classList.add('text-end');
+            }
+
+            for (let i = 1; i <= DefenceIndicator.DEPTH_TABLE_ROWS; i++) {
+                const htmlDepthRow = depthTable.insertRow();
+                const percentsCell = htmlDepthRow.insertCell();
+                percentsCell.innerHTML = '<small>' + (i * DefenceIndicator.DEPTH_TABLE_ROW_STEP / 10).toFixed(1) + '</small>';
+                percentsCell.classList.add('text-end');
+
+                this.htmlDepthBidAmounts[i] = htmlDepthRow.insertCell();
+                this.htmlDepthBidAmounts[i].classList.add('depth-bid-amount')
+                this.htmlDepthBidAmounts[i].classList.add('text-end')
+
+                this.htmlDepthBidPrices[i] = htmlDepthRow.insertCell();
+                this.htmlDepthBidPrices[i].classList.add('text-end');
+
             }
 
 
@@ -473,9 +472,6 @@ class DefenceIndicator
                         this.htmlDepthBidAmounts[i].style.backgroundColor = DefenceIndicator.Market.getDepthAmountColor(this.depthBidAmounts[i], true);
                     }
 
-                    depthBidAmountsSum += depthBidAmountsNew[i];
-                    this.htmlDepthBidAmountSums[i].innerText = Math.floor(depthBidAmountsSum / 1000).toString() + 'k';
-
                     if (depthAskAmountsNew[i] === undefined) {
                         depthAskAmountsNew[i] = 0;
                     }
@@ -485,9 +481,6 @@ class DefenceIndicator
                         this.htmlDepthAskAmounts[i].innerText = (this.depthAskAmounts[i] / 1000).toFixed(1);
                         this.htmlDepthAskAmounts[i].style.backgroundColor = DefenceIndicator.Market.getDepthAmountColor(this.depthAskAmounts[i], false);
                     }
-
-                    depthAskAmountsSum += depthAskAmountsNew[i];
-                    this.htmlDepthAskAmountSums[i].innerText = Math.floor(depthAskAmountsSum / 1000).toString() + 'k';
                 }
 
             }, 300);
@@ -589,7 +582,7 @@ const marketsCollection = new DefenceIndicator.MarketsCollection();
 marketsCollection.binanceSocket.socket.onopen = async () => {
     await marketsCollection.addMarket('BTCUSDT');
     // await marketsCollection.addMarket('ETHUSDT');
-    // await marketsCollection.addMarket('SOLUSDT');
+    await marketsCollection.addMarket('SOLUSDT');
     // await marketsCollection.addMarket('LUNAUSDT');
     // await marketsCollection.addMarket('DASHUSDT');
     // await marketsCollection.addMarket('LTCUSDT');
